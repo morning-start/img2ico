@@ -1,7 +1,9 @@
-import argparse
 import os
 
+import typer
 from PIL import Image
+
+app = typer.Typer()
 
 
 def process_output_path(input_path, output_path=None, size=None, multi_mode=False):
@@ -62,23 +64,21 @@ def convert_to_ico(input_path, output_path=None, sizes=None, multi_mode=False):
         return False
 
 
-if __name__ == "__main__":
-    # 创建命令行参数解析器
-    parser = argparse.ArgumentParser(description="将PNG或JPG图像转换为ICO格式")
-    parser.add_argument("input", help="输入图像文件路径")
-    parser.add_argument("-o", "--output", help="输出ICO文件路径")
-    parser.add_argument(
-        "-s", "--sizes", nargs="+", type=int, help="ICO图标尺寸列表，如: 16 32 48"
-    )
-    parser.add_argument(
-        "-m",
-        "--multi",
-        action="store_true",
-        help="启用多图保存模式，为每个尺寸生成单独的ICO文件",
-    )
-
-    # 解析参数
-    args = parser.parse_args()
-
+@app.command()
+def main(
+    input: str = typer.Argument(..., help="输入图像文件路径"),
+    output: str = typer.Option(None, "-o", "--output", help="输出ICO文件路径"),
+    sizes: list[int] = typer.Option(
+        None, "-s", "--sizes", help="ICO图标尺寸列表，如: 16 32 48"
+    ),
+    multi: bool = typer.Option(
+        False, "-m", "--multi", help="启用多图保存模式，为每个尺寸生成单独的ICO文件"
+    ),
+):
+    """将PNG或JPG图像转换为ICO格式"""
     # 转换图像
-    convert_to_ico(args.input, args.output, args.sizes, args.multi)
+    convert_to_ico(input, output, sizes, multi)
+
+
+if __name__ == "__main__":
+    app()

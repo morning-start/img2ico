@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 
-def write_version_file(version:str, author:str, app_name:str, description:str):
+def write_version_file(version: str, author: str, app_name: str, description: str):
     """
     根据模板配置写入 version_file.txt
 
@@ -17,7 +17,7 @@ def write_version_file(version:str, author:str, app_name:str, description:str):
         "PRODUCT_VERSION": f"({",".join(version.split("."))})",  # 产品版本
         "COMPANY_NAME": author,  # 公司名称
         "FILE_DESCRIPTION": description,  # 文件描述
-        "INTERNAL_NAME":app_name,  # 内部名称
+        "INTERNAL_NAME": app_name,  # 内部名称
         "LEGAL_COPYRIGHT": f"Copyright (C) 2023 {author}",  # 版权信息
         "ORIGINAL_FILENAME": f"{app_name}.exe",  # 原始文件名
         "PRODUCT_NAME": app_name,  # 产品名称

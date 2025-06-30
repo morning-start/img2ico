@@ -1,38 +1,51 @@
-import os
 import subprocess
+from pathlib import Path
 
 
-def build_executable():
-    """使用PyInstaller将Python脚本打包为exe"""
-    script_name = "img2ico.py"
-    icon_file = "logo.ico"  # 注意：PyInstaller需要ICO格式的图标
-    output_dir = "dist"
+def write_version_file(version:str, author:str, app_name:str, description:str):
+    """
+    根据模板配置写入 version_file.txt
 
-    # 确保图标文件存在（需要先将logo.svg转换为logo.ico）
-    if not os.path.exists(icon_file):
-        print(f"错误: 找不到图标文件 {icon_file}，请先将logo.svg转换为ICO格式")
-        return
+    :param version: 版本号
+    :param author: 作者或公司名称
+    :param app_name: 应用名称
+    :param description: 应用描述
+    """
 
-    # 构建命令
-    cmd = [
-        "pyinstaller",
-        "--onefile",
-        f"--icon={icon_file}",
-        f"--distpath={output_dir}",
-        script_name,
-    ]
-
-    try:
-        # 执行打包命令
-        print("开始打包...")
-        result = subprocess.run(cmd, check=True, text=True, capture_output=True)
-        print("打包成功!")
-        print(
-            f"可执行文件位于: {os.path.join(output_dir, os.path.splitext(script_name)[0] + '.exe')}"
-        )
-    except subprocess.CalledProcessError as e:
-        print(f"打包失败: {e.stderr}")
+    metadata = {
+        "FILE_VERSION": f"({",".join(version.split("."))})",  # 文件版本号
+        "PRODUCT_VERSION": f"({",".join(version.split("."))})",  # 产品版本
+        "COMPANY_NAME": author,  # 公司名称
+        "FILE_DESCRIPTION": description,  # 文件描述
+        "INTERNAL_NAME":app_name,  # 内部名称
+        "LEGAL_COPYRIGHT": f"Copyright (C) 2023 {author}",  # 版权信息
+        "ORIGINAL_FILENAME": f"{app_name}.exe",  # 原始文件名
+        "PRODUCT_NAME": app_name,  # 产品名称
+    }
+    info = Path("./templates/version_tmp.txt").read_text(encoding="utf-8")
+    info = info.format(**metadata)
+    Path("./version_file.txt").write_text(info, encoding="utf-8")
 
 
-if __name__ == "__main__":
-    build_executable()
+AUTHOR = "MorningStart"
+VERSION = "1.0.0.0"
+APP_NAME = "img2ico"
+ICON = "logo.ico"
+DISCLAIMER = "this is a freeware to convert image(png/jpg) to ico file"
+write_version_file(VERSION, AUTHOR, APP_NAME)
+# 构建 pyinstaller 命令
+cmd = [
+    "pyinstaller",
+    "--onefile",
+    f"--version-file=version_file.txt",
+    f"--icon={ICON}",
+    f"--name={APP_NAME}",
+    "img2ico.py",  # 假设主程序文件名为 main.py，可按需修改
+]
+
+try:
+    # 执行 pyinstaller 命令
+    subprocess.run(cmd, check=True)
+    print("应用构建成功！")
+except subprocess.CalledProcessError as e:
+    print(f"应用构建失败: {e}")

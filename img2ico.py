@@ -64,7 +64,7 @@ def convert_to_ico(input_path, output_path=None, sizes=None, multi_mode=False):
         return False
 
 
-@app.command()
+@app.command(help="将PNG或JPG图像转换为ICO格式")
 def main(
     input: str = typer.Argument(..., help="输入图像文件路径"),
     output: str = typer.Option(None, "-o", "--output", help="输出ICO文件路径"),

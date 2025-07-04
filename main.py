@@ -1,9 +1,15 @@
 import os
+from pathlib import Path
+from typing import Annotated, Optional
 
 import typer
 from PIL import Image
 
-app = typer.Typer()
+app = typer.Typer(
+    no_args_is_help=True,
+    add_completion=False,
+    short_help="将图片转换为ico图标",
+)
 
 
 def process_output_path(input_path, output_path=None, size=None, multi_mode=False):
@@ -64,16 +70,26 @@ def convert_to_ico(input_path, output_path=None, sizes=None, multi_mode=False):
         return False
 
 
-@app.command(help="将PNG或JPG图像转换为ICO格式")
+@app.command(help="这是一个将图片转换为ico图标的CLI工具", no_args_is_help=True)
 def main(
-    input: str = typer.Argument(..., help="输入图像文件路径"),
-    output: str = typer.Option(None, "-o", "--output", help="输出ICO文件路径"),
-    sizes: list[int] = typer.Option(
-        None, "-s", "--sizes", help="ICO图标尺寸列表，如: 16 32 48"
-    ),
-    multi: bool = typer.Option(
-        False, "-m", "--multi", help="启用多图保存模式，为每个尺寸生成单独的ICO文件"
-    ),
+    input: Annotated[Path, typer.Argument(..., help="输入图像文件路径")],
+    output: Annotated[
+        Optional[Path], typer.Option("-o", "--output", help="输出ICO文件路径")
+    ] = None,
+    sizes: Annotated[
+        Optional[list[int]],
+        typer.Option(
+            "-s",
+            "--sizes",
+            help="ICO图标尺寸列表，例如: -s 16 -s 32 -s 48",
+        ),
+    ] = [16, 32, 48, 64, 128, 256],
+    multi: Annotated[
+        bool,
+        typer.Option(
+            "-m", "--multi", help="启用多图保存模式，为每个尺寸生成单独的ICO文件"
+        ),
+    ] = False,
 ):
     """将PNG或JPG图像转换为ICO格式"""
     # 转换图像
